@@ -5,15 +5,15 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/maheshwarishivanandswami/github-actions-cicd-example.git'
+                checkout scm
             }
         }
 
-        stage('Setup Python') {
+        stage('Verify Python') {
             steps {
                 sh '''
-                python3 --version || apt update && apt install -y python3 python3-pip
+                python3 --version
+                pip3 --version
                 '''
             }
         }
