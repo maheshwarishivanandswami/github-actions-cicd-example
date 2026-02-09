@@ -1,40 +1,37 @@
 pipeline {
-    agent any
-
-    options {
-        skipDefaultCheckout(true)
+    agent {
+        docker {
+            image 'python:3.10-slim'
+        }
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/maheshwarishivanandswami/github-actions-cicd-example.git'
+                checkout scm
             }
         }
 
-        stage('Setup Python') {
+        stage('Python Version') {
             steps {
-                sh 'python3 --version'
+                sh 'python --version'
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 sh '''
-                python3 -m venv venv
-                . venv/bin/activate
                 pip install --upgrade pip
+                pip install -r requirements.txt
+                pip install -e .
                 '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh '''
-                . venv/bin/activate
-                python -m unittest discover || true
-                '''
+                sh 'python -m unittest discover'
             }
         }
     }
