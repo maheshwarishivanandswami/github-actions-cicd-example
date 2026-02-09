@@ -1,37 +1,38 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.10-slim'
-        }
-    }
+    agent any
 
     stages {
 
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'main',
+                    url: 'https://github.com/maheshwarishivanandswami/github-actions-cicd-example.git'
             }
         }
 
-        stage('Python Version') {
+        stage('Setup Python') {
             steps {
-                sh 'python --version'
+                sh '''
+                python3 --version || apt update && apt install -y python3 python3-pip
+                '''
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 sh '''
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                pip install -e .
+                python3 -m pip install --upgrade pip
+                pip3 install -r requirements.txt
+                pip3 install -e .
                 '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'python -m unittest discover'
+                sh '''
+                python3 -m unittest discover
+                '''
             }
         }
     }
