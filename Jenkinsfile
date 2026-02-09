@@ -2,11 +2,9 @@ pipeline {
     agent any
 
     stages {
-
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/maheshwarishivanandswami/github-actions-cicd-example.git'
+                git 'https://github.com/maheshwarishivanandswami/github-actions-cicd-example.git'
             }
         }
 
@@ -14,11 +12,17 @@ pipeline {
             steps {
                 sh '''
                 python3 --version
-                python3 -m venv venv
-                . venv/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                pip install -e .
+                pip3 --version
+                '''
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                pip3 install --upgrade pip
+                pip3 install -r requirements.txt
+                pip3 install -e .
                 '''
             }
         }
@@ -26,8 +30,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                . venv/bin/activate
-                python -m unittest discover
+                python3 -m unittest discover
                 '''
             }
         }
@@ -35,7 +38,7 @@ pipeline {
 
     post {
         success {
-            echo 'BUILD SUCCESSFUL 🎉'
+            echo 'BUILD SUCCESS ✅'
         }
         failure {
             echo 'BUILD FAILED ❌'
