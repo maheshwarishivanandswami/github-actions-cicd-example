@@ -1,48 +1,33 @@
 pipeline {
-    agent any
+  agent any
 
-    stages {
+  tools {
+    nodejs 'NodeJS-20'
+  }
 
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('Verify Python') {
-            steps {
-                sh '''
-                python3 --version
-                pip3 --version
-                '''
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                sh '''
-                python3 -m pip install --upgrade pip
-                pip3 install -r requirements.txt
-                pip3 install -e .
-                '''
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh '''
-                python3 -m unittest discover
-                '''
-            }
-        }
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
     }
 
-    post {
-        success {
-            echo 'BUILD SUCCESS ✅'
-        }
-        failure {
-            echo 'BUILD FAILED ❌'
-        }
+    stage('Install Dependencies') {
+      steps {
+        sh 'npm ci'
+      }
     }
+
+    stage('Lint') {
+      steps {
+        sh 'npm run lint'
+      }
+    }
+
+    stage('Test') {
+      steps {
+        sh 'npm test'
+      }
+    }
+  }
 }
